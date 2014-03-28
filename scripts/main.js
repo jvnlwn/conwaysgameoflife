@@ -131,7 +131,7 @@ life.runTick = function () {
 life.cycle = function () {
     setInterval(function() {
         this.checkNeighbors().runTick();
-    }.bind(this), 300)
+    }.bind(this), 500)
 }
 
 // life.Cell.prototype.clickEvent = function () {

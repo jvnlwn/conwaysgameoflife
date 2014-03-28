@@ -10,7 +10,7 @@
 // A tick is the transition from one generation to the next.
 
 $(document).ready(function () {
-    life.makeCells(500, 500, 10);
+    life.makeCells(510, 510, 10);
     life.neighbourfy();
     life.chooseSetup(life.setups[0])
     life.cycle();

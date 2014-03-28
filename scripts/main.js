@@ -11,7 +11,7 @@
 
 $(document).ready(function () {
     life.makeCells(510, 510, 10);
-    life.neighbourfy();
+    life.neighborfy();
     life.chooseSetup(life.setups[0])
     life.cycle();
 })
@@ -46,6 +46,19 @@ life.setups = [
     ]
 ]
 
+// to generate random hex value
+life.baseColor = (function () {
+    var color = '#', index;
+    var values = '1234567890abcdef'.split('');
+
+    for (var i = 0; i < 6; i++) {
+        index = Math.floor(Math.random() * 16);
+        color += values[index];
+    }
+
+    return color;
+})()
+
 life.Cell = function (options) {
     this.x = options.x;
     this.y = options.y;
@@ -54,13 +67,19 @@ life.Cell = function (options) {
     this.el = $('<div class="cell"></div>');
 }
 
+// set cell color
+life.Cell.prototype.setColor = function (x, y) {
+    this.color = colorLuminance(life.baseColor, ((Math.abs(this.x - x / 2) + Math.abs(this.y - y / 2)) * .02));
+    return this;
+}
+
 life.Cell.prototype.enter = function () {
     $('#life').append(this.el);
     return this;
 }
 
 // calls life.makeNeighbors on each sell
-life.neighbourfy = function () {
+life.neighborfy = function () {
     _.each(this.cells, function (row) {
         _.each(row, function (cell, index) {
             // passing cell, number of cells in row, number of cells in column
@@ -103,7 +122,7 @@ life.setTick = function (cell, living) {
 life.runTick = function () {
     _.each(this.tick, function (cell) {
         cell.alive = !cell.alive;
-        cell.el.css('background', cell.alive ? '#000' : '#FFF');
+        cell.el.css('background', cell.alive ? cell.color : '#FFF');
     })
     this.tick = [];
 }
@@ -112,7 +131,7 @@ life.runTick = function () {
 life.cycle = function () {
     setInterval(function() {
         this.checkNeighbors().runTick();
-    }.bind(this), 1000)
+    }.bind(this), 300)
 }
 
 // life.Cell.prototype.clickEvent = function () {
@@ -131,17 +150,16 @@ life.makeCells = function (x, y, size) {
     for (var y = 0; y < yCells; y++) {
         this.cells.push([])
         for (var x = 0; x < xCells; x++) {
-            this.cells[y].push(new this.Cell({ x: x, y: y, alive: false}).enter());
+            this.cells[y].push(new this.Cell({ x: x, y: y, alive: false}).enter().setColor(xCells, yCells));
         }
     }
 }
 
 life.chooseSetup = function (setup) {
     _.each(setup, function (position) {
-        console.log(position)
         var cell = life.cells[position.y][position.x];
         cell.alive = true;
-        cell.el.css('background', '#000');
+        cell.el.css('background', cell.color);
     })
 }
 
@@ -149,3 +167,24 @@ life.chooseSetup = function (setup) {
 // function random () {
 //     return !Boolean(Math.floor(Math.random() * 10));
 // }
+
+// curtosy of Craig Buckler: http://www.sitepoint.com/javascript-generate-lighter-darker-color/
+function colorLuminance(hex, lum) {
+
+    // validate hex string
+    var hex = String(hex).replace(/[^0-9a-f]/gi, '');
+    if (hex.length < 6) {
+        hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    }
+    var lum = lum || 0;
+
+    // convert to decimal and change luminosity
+    var rgb = "#", c, i;
+    for (i = 0; i < 3; i++) {
+        c = parseInt(hex.substr(i*2,2), 16);
+        c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+        rgb += ("00"+c).substr(c.length);
+    }
+
+    return rgb;
+}

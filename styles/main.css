@@ -1,0 +1,13 @@
+#life {
+    width: 500px;
+    height: 500px;
+    margin: 100px auto 0;
+    border: 1px solid #000;
+}
+
+.cell {
+    width: 10px;
+    height: 10px;
+    background: #FFF;
+    float: left;
+}

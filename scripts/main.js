@@ -12,7 +12,7 @@
 $(document).ready(function () {
     life.makeCells(510, 510, 10);
     life.neighborfy();
-    life.chooseSetup(life.setups[0])
+    life.begins(new Pattern({x: 0, y: 0}, patterns.vanleeuwen).makePattern().pattern);
     life.cycle();
 })
 
@@ -24,27 +24,7 @@ life.cells = [];
 life.tick = [];
 // condition for whether cell lives
 life.map = [false, false, true, true, false, false, false, false, false];
-// setups
-life.setups = [
-    [
-        {
-            x: 25,
-            y: 24
-        },
-        {
-            x: 25,
-            y: 26
-        },,
-        {
-            x: 24,
-            y: 25
-        },,
-        {
-            x: 26,
-            y: 25
-        }
-    ]
-]
+// life.map = [false, false, function (alive) { !alive }, true, false, false, false, false, false];
 
 // to generate random hex value
 life.baseColor = (function () {
@@ -113,8 +93,15 @@ life.checkNeighbors = function () {
     return this;
 }
 
+// // push cells that need changing
+// life.setTick = function (cell, living) {
+//     // "B3/S23" at least an attempt? why you no work!?!
+//     if (!(living === 2 && !cell.alive) && this.map[living] !== cell.alive) this.tick.push(cell)
+// }
+
 // push cells that need changing
 life.setTick = function (cell, living) {
+        // "B23/S23"
     if (this.map[living] !== cell.alive) this.tick.push(cell)
 }
 
@@ -134,15 +121,17 @@ life.cycle = function () {
     }.bind(this), 500)
 }
 
-// life.Cell.prototype.clickEvent = function () {
-//     this.el.on('click', function () {
-//         console.log(this.x + ', ' + this.y)
-//         this.alive = true;
-//         this.el.css('background', '#000');
-//     }.bind(this));
-//     return this;
-// }
+// allow user to manually setup living cells
+life.Cell.prototype.clickEvent = function () {
+    this.el.on('click', function () {
+        console.log(this.x + ', ' + this.y)
+        this.alive = !this.alive;
+        this.el.css('background', this.alive ? this.color : '#FFF');
+    }.bind(this));
+    return this;
+}
 
+// create new cells, add them to life.cells and append to DOM
 life.makeCells = function (x, y, size) {
     var xCells = x / size;
     var yCells = y / size;
@@ -150,23 +139,19 @@ life.makeCells = function (x, y, size) {
     for (var y = 0; y < yCells; y++) {
         this.cells.push([])
         for (var x = 0; x < xCells; x++) {
-            this.cells[y].push(new this.Cell({ x: x, y: y, alive: false}).enter().setColor(xCells, yCells));
+            this.cells[y].push(new this.Cell({ x: x, y: y, alive: false}).enter().setColor(xCells, yCells).clickEvent());
         }
     }
 }
 
-life.chooseSetup = function (setup) {
+// use selected setup to establish the initally living cells
+life.begins = function (setup) {
     _.each(setup, function (position) {
         var cell = life.cells[position.y][position.x];
         cell.alive = true;
         cell.el.css('background', cell.color);
     })
 }
-
-
-// function random () {
-//     return !Boolean(Math.floor(Math.random() * 10));
-// }
 
 // curtosy of Craig Buckler: http://www.sitepoint.com/javascript-generate-lighter-darker-color/
 function colorLuminance(hex, lum) {

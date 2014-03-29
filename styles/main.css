@@ -1,6 +1,9 @@
 #life {
     width: 510px;
     height: 510px;
+/*    width: 612px;
+    height: 612px;*/
+    position: relative;
     margin: 100px auto 0;
 }
 
@@ -9,4 +12,37 @@
     height: 10px;
     background: #FFF;
     float: left;
+    /*border: 1px solid red;*/
+}
+
+
+/* extra */
+.x, .y {
+    font-size: 10px;
+    position: absolute;
+    font-family: monospace;
+}
+
+.x {
+    top: -15px;
+}
+
+.x span {
+    display: inline-block;
+}
+
+.x span:nth-child(2n) {
+    position: relative;
+    top: -10px;
+}
+
+.y {
+    text-align: right;
+    left: -15px;
+    line-height: 12.5px;
+}
+
+
+.y span {
+    display: block;
 }

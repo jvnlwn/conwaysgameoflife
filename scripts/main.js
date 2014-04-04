@@ -12,7 +12,7 @@
 $(document).ready(function () {
     life.makeCells(510, 510, 10);
     life.neighborfy();
-    life.begins(new Pattern({x: 0, y: 0}, patterns.vanleeuwen).makePattern().pattern);
+    life.begins(new Pattern({x: 24, y: 24}, patterns.plus).makePattern().pattern);
     life.cycle();
 })
 
@@ -24,7 +24,6 @@ life.cells = [];
 life.tick = [];
 // condition for whether cell lives
 life.map = [false, false, true, true, false, false, false, false, false];
-// life.map = [false, false, function (alive) { !alive }, true, false, false, false, false, false];
 
 // to generate random hex value
 life.baseColor = (function () {
@@ -93,15 +92,14 @@ life.checkNeighbors = function () {
     return this;
 }
 
-// // push cells that need changing
+// // "B3/S23" version. Push cells that need changing
 // life.setTick = function (cell, living) {
-//     // "B3/S23" at least an attempt? why you no work!?!
-//     if (!(living === 2 && !cell.alive) && this.map[living] !== cell.alive) this.tick.push(cell)
+//     // if living is 2 and cell is dead, do not proceed, else push cell to tick if its current alive state does not equal its new alive state
+//     if (!(living === 2 && !cell.alive) && this.map[living] !== cell.alive) this.tick.push(cell);
 // }
 
-// push cells that need changing
+// // "B23/S23" version. Push cells that need changing
 life.setTick = function (cell, living) {
-        // "B23/S23"
     if (this.map[living] !== cell.alive) this.tick.push(cell)
 }
 
@@ -118,7 +116,7 @@ life.runTick = function () {
 life.cycle = function () {
     setInterval(function() {
         this.checkNeighbors().runTick();
-    }.bind(this), 500)
+    }.bind(this), 400)
 }
 
 // allow user to manually setup living cells
